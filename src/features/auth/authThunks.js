@@ -10,9 +10,14 @@ export const loginUser = createAsyncThunk(
     dispatch(loginStart());
     try {
       const response = await axios.post(`${config.BackendEndpoint}/login`, credentials); // Update with your actual login endpoint
-      const {token} = response.data;
-      localStorage.setItem("tradeToken", token);
-      dispatch(loginSuccess(response.data));
+      if(response.data.state) {
+        const {token} = response.data;
+        localStorage.setItem("tradeToken", token);
+        dispatch(loginSuccess(response.data));
+      } else {
+        dispatch(loginFailure(response.data.msg));
+      }
+      
     } catch (error) {
       dispatch(loginFailure(error.response?.data?.message || error.message));
     }

@@ -11,7 +11,7 @@ import PositionsTable from './PositionsTable';
 import RealPositionsTable from './RealPositionsTable';
 import axiosInstance from "../../../utils/axios";
 import { Modal } from '@mui/material';
-import global from '../../../utils/global';
+import global, { symbols } from '../../../utils/global';
 import { fetchSymbols, fetchTradingDatas } from '../../../utils/api';
 
 function CustomTabPanel(props) {
@@ -86,26 +86,16 @@ function a11yProps(index) {
     };
 }
 
-// const Symbols = ['EURUSD', 'GBPUSD', 'USDJPY', 'AUDUSD', 'USDCAD', 'USDCHF']
-global.symbols = await fetchSymbols();
-
-console.log("this is the leverage and commission", global)
-const Symbols = global.symbols.map(item => item.code);
 export default function AccountManagement(props) {
     const [value, setValue] = React.useState(0);
     const [leverage, setLeverage] = React.useState(1);
     const [commission, setCommission] = React.useState(1);
-    const [pip_size, setPipSize] = React.useState(1);
-    // const [commission, setcommission] = React.useState(1);
-    // const commission = global.leverage;
-    // const pip_size = global.commission;
 
     const [updateProfit, setUpdateProfit] = React.useState(0);
     const [updateLoss, setUpdateLoss] = React.useState(0);
 
     const [bid, setBid] = React.useState([0, 0, 0, 0, 0, 0]);
     const [ask, setAsk] = React.useState([0, 0, 0, 0, 0, 0]);
-    const [symbol, setSymbol] = React.useState(Symbols[0]);
     const [amount, setAmount] = React.useState(0);
 
     const [openPositionsData, setOpenPositionsData] = React.useState([]);
@@ -122,11 +112,13 @@ export default function AccountManagement(props) {
 
     const positionInterval = React.useRef(null);
 
-    React.useEffect(async () => {
-        const datas = await fetchTradingDatas();
-        setLeverage(datas.leverage);
-        setPipSize(datas.commission);
-        
+    React.useEffect(() => {
+        const fetchTrading = async () => {
+            const datas = await fetchTradingDatas();
+            setLeverage(datas.leverage);
+            setCommission(datas.commission);
+        }
+        fetchTrading();
         const ws = new WebSocket('wss://marketdata.tradermade.com/feedadv');
 
         const updateBid = (index, newValue) => {
@@ -147,15 +139,21 @@ export default function AccountManagement(props) {
 
         const handleOpen = () => {
             console.log('WebSocket connection established');
-            ws.send(`{"userKey":"sio3aaPYVIHFBnMMLnBww", "symbol": ${Symbols.join(',')}}`);
+            console.log("symbols : ", props.symbols);
+            ws.send(`{"userKey":"wsx87-Jw_pCkochqfjRA", "symbol": "${props.symbols.map(item => item.code).join(',')}"}`);
+            // ws.send("{\"userKey\":\"wsx87-Jw_pCkochqfjRA\", \"symbol\":\"BTCUSD\"}");
         };
 
         const handleMessage = (event) => {
             try {
+                if (event.data === "User Key Used to many times") {
+                    console.log("User Key Used to many times");
+                    return;
+                }
                 if (event.data !== "Connected") {
                     const data = JSON.parse(event.data);
-                    updateAsk(Symbols.indexOf(data.symbol), data.ask);
-                    updateBid(Symbols.indexOf(data.symbol), data.bid);
+                    updateAsk(props.symbols.map(item => item.code).indexOf(data.symbol), data.ask);
+                    updateBid(props.symbols.map(item => item.code).indexOf(data.symbol), data.bid);
                 }
             } catch (error) {
                 console.error('Error parsing WebSocket message:', error);
@@ -186,7 +184,7 @@ export default function AccountManagement(props) {
             ws.close();
         };
         
-    }, []);
+    }, [props.symbols]);
 
     const getAllPositions = () => {
         axiosInstance.post("/getAllPositions")
@@ -218,7 +216,7 @@ export default function AccountManagement(props) {
     const handleOption = (option) => {
         const data = {
             amount: amount,
-            symbol: symbol,
+            symbol: props.selectedSymbol,
             option: option,
         }
         axiosInstance.post("/createPosition", data)
@@ -297,28 +295,28 @@ export default function AccountManagement(props) {
                     />
                 </div>
                 <div className='trading-setting'>
-                    <span className='font-white'>Symbol : </span>
-                    <select id="Symbol" name="Symbol" defaultValue={"EURUSD"} className='trading-symbol' onChange={(e) => setSymbol(e.target.value)}>
+                    {/* <span className='font-white'>Symbol : </span> */}
+                    <select id="Symbol" name="Symbol" defaultValue={"EURUSD"} className='trading-symbol' onChange={(e) => props.setSelectedSymbol(e.target.value)}>
                         {
-                            global.symbols.map((value) => {
+                            props.symbols.map((value) => {
                                 return (
                                     <option key={value.code} value={value.code}>{value.name}</option>
                                 );
                             })
                         }
                     </select>
-                    <input value={`Bid: ${bid[Symbols.indexOf(symbol)]}`} className='trading-leverage' readOnly />
+                    <input value={`Bid: ${bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)]}`} className='trading-leverage' readOnly />
                     <button onClick={() => { handleOption(true) }} className='trading-btns'>Sell</button>
                     <input defaultValue={amount} className='trading-amount' onChange={(e) => setAmount(e.target.value)} />
                     <button onClick={() => { handleOption(false) }} className='trading-btns'>Buy</button>
-                    <input value={`Ask: ${ask[Symbols.indexOf(symbol)]}`} className='trading-leverage' readOnly />
+                    <input value={`Ask: ${ask[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)]}`} className='trading-leverage' readOnly />
                 </div>
                 <CustomTabPanel value={value} index={0}>
                     <PositionsTable
                         positionData={openPositionsData}
+                        symbols={props.symbols}
                         leverage={leverage}
                         commission={commission}
-                        pip_size={pip_size}
                         bids={bid}
                         asks={ask}
                         setEquity={setEquity}

@@ -10,6 +10,7 @@ import Alert from '@mui/material/Alert';
 import AccountManagement from './account/AccountManagement';
 import { useSelector } from 'react-redux';
 import Logout from '../../components/Auth/Logout';
+import { fetchSymbols } from '../../utils/api';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#101013',
@@ -22,8 +23,15 @@ const Item = styled(Paper)(({ theme }) => ({
 const Trading = () => {
     const [isAuth, setIsAuth] = useState(true);
     const [selectedSymbol, setSelectedSymbol] = useState("FX:EURUSD");
+    const [symbols, setSymbols] = React.useState([]);
     const user = useSelector((state) => state.auth.user)
     console.log("this is a user", user)
+    useEffect(() => {
+        async function fetchData() {
+            setSymbols(await fetchSymbols());
+        }
+        fetchData();
+    }, [])
     return (
         <>
             <div style={{ height: "50px" }}>
@@ -62,6 +70,7 @@ const Trading = () => {
                                 setIsAuth={setIsAuth}
                                 selectedSymbol={selectedSymbol}
                                 setSelectedSymbol={setSelectedSymbol}
+                                symbols={symbols}
                             />
                         </Box>
                         : <></>
