@@ -110,6 +110,8 @@ export default function AccountManagement(props) {
     const [updateModalVisible, setUpdateModalVisible] = React.useState(false);
     const [updateID, setUpdateID] = React.useState(0);
 
+    const [isSetSymbol, setIsSetSymbol] = React.useState(false);
+
     const positionInterval = React.useRef(null);
 
     React.useEffect(() => {
@@ -183,16 +185,18 @@ export default function AccountManagement(props) {
             ws.removeEventListener('error', handleError);
             ws.close();
         };
-        
+
     }, [props.symbols]);
 
     const getAllPositions = () => {
         axiosInstance.post("/getAllPositions")
             .then((res) => {
                 if (res.data.state) {
-                    props.setIsAuth(false);
-                    localStorage.removeItem("tradeToken");
-                    window.location.reload();
+                    if (res.data.state != "Your balance is not enough") {
+                        props.setIsAuth(false);
+                        localStorage.removeItem("tradeToken");
+                        window.location.reload();
+                    }
                     return;
                 }
                 // console.log("data : ", res.data);
@@ -222,8 +226,11 @@ export default function AccountManagement(props) {
         axiosInstance.post("/createPosition", data)
             .then((res) => {
                 if (res.data.state) {
-                    props.setIsAuth(false);
-                    localStorage.removeItem("tradeToken");
+                    if (res.data.state != "Your balance is not enough") {
+                        props.setIsAuth(false);
+                        localStorage.removeItem("tradeToken");
+                        window.location.reload();
+                    }
                     return;
                 }
                 // console.log("data : ", res.data);
@@ -296,19 +303,23 @@ export default function AccountManagement(props) {
                 </div>
                 <div className='trading-setting'>
                     {/* <span className='font-white'>Symbol : </span> */}
-                    <select id="Symbol" name="Symbol" defaultValue={"EURUSD"} className='trading-symbol' onChange={(e) => props.setSelectedSymbol(e.target.value)}>
-                        {
-                            props.symbols.map((value) => {
-                                return (
-                                    <option key={value.code} value={value.code}>{value.name}</option>
-                                );
-                            })
-                        }
+                    <select
+                        id="Symbol"
+                        name="Symbol"
+                        className='trading-symbol'
+                        onChange={(e) => {props.setSelectedSymbol(e.target.value); setIsSetSymbol(true);}}
+                        defaultValue=""
+                    >
+                        <option value="" disabled>Please Select Symbol</option>
+                        {props.symbols.map((value) => (
+                            <option key={value.code} value={value.code}>{value.name}</option>
+                        ))}
                     </select>
+
                     <input value={`Bid: ${bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)]}`} className='trading-leverage' readOnly />
-                    <button onClick={() => { handleOption(true) }} className='trading-btns'>Sell</button>
+                    <button onClick={() => { handleOption(true) }} className='trading-sell' disabled={!isSetSymbol}>Sell</button>
                     <input defaultValue={amount} className='trading-amount' onChange={(e) => setAmount(e.target.value)} />
-                    <button onClick={() => { handleOption(false) }} className='trading-btns'>Buy</button>
+                    <button onClick={() => { handleOption(false) }} className='trading-buy' disabled={!isSetSymbol}>Buy</button>
                     <input value={`Ask: ${ask[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)]}`} className='trading-leverage' readOnly />
                 </div>
                 <CustomTabPanel value={value} index={0}>

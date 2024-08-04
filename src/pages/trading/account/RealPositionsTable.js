@@ -82,11 +82,12 @@ const RealPositionsTable = (props) => {
             <StyledTableCell>Commission</StyledTableCell>
             <StyledTableCell>Real Profit</StyledTableCell>
             <StyledTableCell>Closed Reason</StyledTableCell>
-            </TableRow>
+          </TableRow>
         </TableHead>
         <TableBody>
-          {props.positionData.map((row) => (
+          {props.positionData.map((row, index) => (
             <StyledTableRow
+              key={row.positionID || index} // Ideally, you should use a unique identifier like row.positionID
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <StyledTableCell component="th" scope="row">

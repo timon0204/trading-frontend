@@ -45,6 +45,22 @@
   width: 80px;
 }
 
+.trading-sell {
+  margin: 0 5px;
+  background: rgb(41, 143, 55);
+  color: white;
+  width: 80px;
+  border-radius: 10px;
+}
+
+.trading-buy {
+  margin: 0 5px;
+  background: rgb(143, 40, 40);
+  color: white;
+  width: 80px;
+  border-radius: 10px;
+}
+
 .font-white {
   color: white;
 }
@@ -58,14 +74,14 @@
   margin: 0 15px 0 0;
   background: black;
   color: white;
-  width: 120px;
+  width: 200px;
 }
 
 .trading-leverage {
   margin: 0 0 0 0;
   background: gray;
   color: black;
-  width: 100px;
+  width: 150px;
 }
 
 .trading-amount {

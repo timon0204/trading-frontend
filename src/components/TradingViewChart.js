@@ -37,12 +37,6 @@ const TradingViewWidget = ({ selectedSymbol, setSelectedSymbol }) => {
           });
         }
       }, 1000); // Adjust timeout as needed
-
-      return () => {
-        if (widget) {
-          widget.remove();
-        }
-      };
     }
   }, [selectedSymbol]);
 
