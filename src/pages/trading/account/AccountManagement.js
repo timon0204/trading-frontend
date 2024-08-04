@@ -12,6 +12,7 @@ import RealPositionsTable from './RealPositionsTable';
 import axiosInstance from "../../../utils/axios";
 import { Modal } from '@mui/material';
 import global from '../../../utils/global';
+import { fetchSymbols, fetchTradingDatas } from '../../../utils/api';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -85,21 +86,26 @@ function a11yProps(index) {
     };
 }
 
-const Symbols = ['EURUSD', 'GBPUSD', 'USDJPY', 'AUDUSD', 'USDCAD', 'USDCHF']
+// const Symbols = ['EURUSD', 'GBPUSD', 'USDJPY', 'AUDUSD', 'USDCAD', 'USDCHF']
+global.symbols = await fetchSymbols();
 
+console.log("this is the leverage and commission", global)
+const Symbols = global.symbols.map(item => item.code);
 export default function AccountManagement(props) {
     const [value, setValue] = React.useState(0);
     const [leverage, setLeverage] = React.useState(1);
-    // const [commition, setCommition] = React.useState(1);
-    const commition = 0.03;
-    const pip_size = 0.0001;
+    const [commission, setCommission] = React.useState(1);
+    const [pip_size, setPipSize] = React.useState(1);
+    // const [commission, setcommission] = React.useState(1);
+    // const commission = global.leverage;
+    // const pip_size = global.commission;
 
     const [updateProfit, setUpdateProfit] = React.useState(0);
     const [updateLoss, setUpdateLoss] = React.useState(0);
 
     const [bid, setBid] = React.useState([0, 0, 0, 0, 0, 0]);
     const [ask, setAsk] = React.useState([0, 0, 0, 0, 0, 0]);
-    const [symbol, setSymbol] = React.useState("EURUSD");
+    const [symbol, setSymbol] = React.useState(Symbols[0]);
     const [amount, setAmount] = React.useState(0);
 
     const [openPositionsData, setOpenPositionsData] = React.useState([]);
@@ -116,7 +122,11 @@ export default function AccountManagement(props) {
 
     const positionInterval = React.useRef(null);
 
-    React.useEffect(() => {
+    React.useEffect(async () => {
+        const datas = await fetchTradingDatas();
+        setLeverage(datas.leverage);
+        setPipSize(datas.commission);
+        
         const ws = new WebSocket('wss://marketdata.tradermade.com/feedadv');
 
         const updateBid = (index, newValue) => {
@@ -137,7 +147,7 @@ export default function AccountManagement(props) {
 
         const handleOpen = () => {
             console.log('WebSocket connection established');
-            ws.send(`{"userKey":"sio4HcKFafyguv1rn8NLA", "symbol":"EURUSD,GBPUSD,USDJPY,AUDUSD,USDCAD,USDCHF"}`);
+            ws.send(`{"userKey":"sio3aaPYVIHFBnMMLnBww", "symbol": ${Symbols.join(',')}}`);
         };
 
         const handleMessage = (event) => {
@@ -175,6 +185,7 @@ export default function AccountManagement(props) {
             ws.removeEventListener('error', handleError);
             ws.close();
         };
+        
     }, []);
 
     const getAllPositions = () => {
@@ -260,9 +271,8 @@ export default function AccountManagement(props) {
         axiosInstance.post("/updatePosition", { updateID, updateProfit, updateLoss })
             .then((res) => {
                 // console.log("data : ", res.data);
-                const { positions, leverage } = res.data;
+                const { positions } = res.data;
                 setOpenPositionsData(positions);
-                setLeverage(leverage);
             })
             .catch((err) => {
                 console.log("Axios Error with ", err);
@@ -289,12 +299,13 @@ export default function AccountManagement(props) {
                 <div className='trading-setting'>
                     <span className='font-white'>Symbol : </span>
                     <select id="Symbol" name="Symbol" defaultValue={"EURUSD"} className='trading-symbol' onChange={(e) => setSymbol(e.target.value)}>
-                        <option value="EURUSD">EUR to USD</option>
-                        <option value="USDJPY">USD to JPY</option>
-                        <option value="GBPUSD">GBP to USD</option>
-                        <option value="AUDUSD">AUD to USD</option>
-                        <option value="USDCAD">USD to CAD</option>
-                        <option value="USDCHF">USD to CHF</option>
+                        {
+                            global.symbols.map((value) => {
+                                return (
+                                    <option key={value.code} value={value.code}>{value.name}</option>
+                                );
+                            })
+                        }
                     </select>
                     <input value={`Bid: ${bid[Symbols.indexOf(symbol)]}`} className='trading-leverage' readOnly />
                     <button onClick={() => { handleOption(true) }} className='trading-btns'>Sell</button>
@@ -306,7 +317,7 @@ export default function AccountManagement(props) {
                     <PositionsTable
                         positionData={openPositionsData}
                         leverage={leverage}
-                        commition={commition}
+                        commission={commission}
                         pip_size={pip_size}
                         bids={bid}
                         asks={ask}
