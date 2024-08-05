@@ -61,7 +61,8 @@ const TableSellCell = styled(TableCell)(({ theme }) => ({
 const PositionsTable = (props) => {
   let totalProfit = 0;
   React.useEffect(() => {
-    for(const row of props.positionData) {
+    for (const row of props.positionData) {
+      console.log("bid : ", props.symbols.filter((symbol) => symbol.code == row.symbol)[0])
       totalProfit += ((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbol)[0].pip_size * row.size - props.commission);
     };
     props.setEquity(totalProfit);

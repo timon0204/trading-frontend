@@ -117,23 +117,22 @@ export default function AccountManagement(props) {
 
     const [activeGroup, setActiveGroup] = React.useState(null);
     const [menuVisible, setMenuVisible] = React.useState(false);
+    const groupedSymbols = props.symbols.reduce((acc, value) => {
+        const group = acc.find(g => g.assetName === value.assetName);
+        if (group) {
+            group.symbols.push(value);
+        } else {
+            acc.push({ assetName: value.assetName, symbols: [value] });
+        }
+        return acc;
+    }, []);
 
-    const groupedSymbols = props.symbols.reduce((acc, value) => {  
-        const group = acc.find(g => g.assetName === value.assetName);  
-        if (group) {  
-            group.symbols.push(value);  
-        } else {  
-            acc.push({ assetName: value.assetName, symbols: [value] });  
-        }  
-        return acc;  
-    }, []);  
+    const handleMouseEnter = () => {
+        setMenuVisible(true);
+    };
 
-    const handleMouseEnter = () => {  
-        setMenuVisible(true);  
-    };  
-
-    const handleMouseLeave = () => {  
-        setMenuVisible(false);  
+    const handleMouseLeave = () => {
+        setMenuVisible(false);
         setActiveGroup(null); // Reset active group on leave  
     };
 
@@ -326,47 +325,48 @@ export default function AccountManagement(props) {
                 </div>
                 <div className='trading-setting'>
                     {/* <span className='font-white'>Symbol : </span> */}
-                    <div className="dropdown" onMouseLeave={handleMouseLeave}>  
-            <button   
-                className="dropbtn"   
-                onMouseEnter={handleMouseEnter}   
-                onClick={() => setMenuVisible(prev => !prev)}  
-            >  
-                Select Symbol  
-            </button>  
-            {menuVisible && (  
-                <div className="dropdown-content" onMouseEnter={handleMouseEnter}>  
-                    {groupedSymbols.map(group => (  
-                        <div  
-                            key={group.assetName}  
-                            onMouseEnter={() => setActiveGroup(group.assetName)}  
-                            onMouseLeave={() => setActiveGroup(null)}  
-                            className="dropdown-group"  
-                        >  
-                            <div className={`group-label ${activeGroup === group.assetName ? 'active' : ''}`}>  
-                                {group.assetName} <span className="arrow">{activeGroup === group.assetName ? '->' : ''}</span>  
-                            </div>  
-                            {activeGroup === group.assetName && (  
-                                <div className="child-menu">  
-                                    {group.symbols.map(symbol => (  
-                                        <div  
-                                            key={symbol.code}  
-                                            onClick={() => {  
-                                                props.setSelectedSymbol(symbol.code);  
-                                                setMenuVisible(false); // Close the menu on selection  
-                                            }}  
-                                            className="child-item"  
-                                        >  
-                                            {symbol.name}  
-                                        </div>  
-                                    ))}  
-                                </div>  
-                            )}  
-                        </div>  
-                    ))}  
-                </div>  
-            )}  
-        </div>  
+                    <div className="dropdown" onMouseLeave={handleMouseLeave}>
+                        <button
+                            className="dropbtn"
+                            onMouseEnter={handleMouseEnter}
+                            onClick={() => setMenuVisible(prev => !prev)}
+                        >
+                            {!isSetSymbol ? "Select Symbol" : props.selectedSymbol}
+                        </button>
+                        {menuVisible && (
+                            <div className="dropdown-content" onMouseEnter={handleMouseEnter}>
+                                {groupedSymbols.map(group => (
+                                    <div
+                                        key={group.assetName}
+                                        onMouseEnter={() => setActiveGroup(group.assetName)}
+                                        onMouseLeave={() => setActiveGroup(null)}
+                                        className="dropdown-group"
+                                    >
+                                        <div className={`group-label ${activeGroup === group.assetName ? 'active' : ''}`}>
+                                            {group.assetName} <span className="arrow">{activeGroup === group.assetName ? '->' : ''}</span>
+                                        </div>
+                                        {activeGroup === group.assetName && (
+                                            <div className="child-menu">
+                                                {group.symbols.map(symbol => (
+                                                    <div
+                                                        key={symbol.code}
+                                                        onClick={() => {
+                                                            props.setSelectedSymbol(symbol.code);
+                                                            setMenuVisible(false); // Close the menu on selection  
+                                                            setIsSetSymbol(true);
+                                                        }}
+                                                        className="child-item"
+                                                    >
+                                                        {symbol.name}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                     <input value={`Bid: ${bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] ? bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] : "Select Symbol"}`} className='trading-leverage' readOnly />
                     <button onClick={() => { handleOption(true) }} className='trading-sell' disabled={!isSetSymbol}>Sell</button>
                     <input defaultValue={amount} className='trading-amount' onChange={(e) => setAmount(e.target.value)} />
