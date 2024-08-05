@@ -8,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import { styled } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import WatchListItem from '../../../components/WatchListItem';
+import { leverage } from '../../../utils/global';
 
 function createData(name, calories, size, carbs, protein) {
   return { name, calories, size, carbs, protein };
@@ -61,9 +62,8 @@ const TableSellCell = styled(TableCell)(({ theme }) => ({
 const PositionsTable = (props) => {
   let totalProfit = 0;
   React.useEffect(() => {
-    for (const row of props.positionData) {
-      console.log("bid : ", props.symbols.filter((symbol) => symbol.code == row.symbol)[0])
-      totalProfit += ((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbol)[0].pip_size * row.size - props.commission);
+    for(const row of props.positionData) {
+      totalProfit += ((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbol)[0].pip_size * row.size * props.leverage - props.commission);
     };
     props.setEquity(totalProfit);
   })
@@ -105,8 +105,8 @@ const PositionsTable = (props) => {
               <StyledTableCell>{row.takeProfit}</StyledTableCell>
               <StyledTableCell>{row.type == "Sell" ? props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)]}</StyledTableCell>
               <StyledTableCell>{props.commission}</StyledTableCell>
-              <StyledTableCell>{((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbol)[0].pip_size * row.size).toFixed(2)}</StyledTableCell>
-              <StyledTableCell>{((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbol)[0].pip_size * row.size - props.commission).toFixed(2)}</StyledTableCell>
+              <StyledTableCell>{((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbol)[0].pip_size * row.size * props.leverage).toFixed(2)}</StyledTableCell>
+              <StyledTableCell>{((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbol)[0].pip_size * row.size * props.leverage - props.commission).toFixed(2)}</StyledTableCell>
               <StyledTableCell><button onClick={() => { props.handleCancel(row.id) }} className='trading-btns'>Close</button><button onClick={() => { props.handleUpdate(row.id) }} className='trading-btns'>Update</button></StyledTableCell>
             </StyledTableRow>
           ))}
