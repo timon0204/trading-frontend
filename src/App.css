@@ -87,3 +87,13 @@
 .trading-amount {
   width: 100px;
 }
+
+.btn_logout {
+  margin: 5px 45px 0 0;
+  background: rgb(41, 143, 55);
+  color: rgb(163, 40, 116);
+  width: 80px;
+  height: 40px;
+  border-radius: 10px;
+  float: right;
+}
