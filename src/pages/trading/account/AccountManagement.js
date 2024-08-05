@@ -13,6 +13,7 @@ import axiosInstance from "../../../utils/axios";
 import { Modal } from '@mui/material';
 import global, { symbols } from '../../../utils/global';
 import { fetchSymbols, fetchTradingDatas } from '../../../utils/api';
+import "./DropdownMenu.css";
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -113,6 +114,28 @@ export default function AccountManagement(props) {
     const [isSetSymbol, setIsSetSymbol] = React.useState(false);
 
     const positionInterval = React.useRef(null);
+
+    const [activeGroup, setActiveGroup] = React.useState(null);
+    const [menuVisible, setMenuVisible] = React.useState(false);
+
+    const groupedSymbols = props.symbols.reduce((acc, value) => {  
+        const group = acc.find(g => g.assetName === value.assetName);  
+        if (group) {  
+            group.symbols.push(value);  
+        } else {  
+            acc.push({ assetName: value.assetName, symbols: [value] });  
+        }  
+        return acc;  
+    }, []);  
+
+    const handleMouseEnter = () => {  
+        setMenuVisible(true);  
+    };  
+
+    const handleMouseLeave = () => {  
+        setMenuVisible(false);  
+        setActiveGroup(null); // Reset active group on leave  
+    };
 
     React.useEffect(() => {
         const fetchTrading = async () => {
@@ -303,24 +326,52 @@ export default function AccountManagement(props) {
                 </div>
                 <div className='trading-setting'>
                     {/* <span className='font-white'>Symbol : </span> */}
-                    <select
-                        id="Symbol"
-                        name="Symbol"
-                        className='trading-symbol'
-                        onChange={(e) => {props.setSelectedSymbol(e.target.value); setIsSetSymbol(true);}}
-                        defaultValue=""
-                    >
-                        <option value="" disabled>Please Select Symbol</option>
-                        {props.symbols.map((value) => (
-                            <option key={value.code} value={value.code}>{value.name}</option>
-                        ))}
-                    </select>
-
-                    <input value={`Bid: ${bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)]}`} className='trading-leverage' readOnly />
+                    <div className="dropdown" onMouseLeave={handleMouseLeave}>  
+            <button   
+                className="dropbtn"   
+                onMouseEnter={handleMouseEnter}   
+                onClick={() => setMenuVisible(prev => !prev)}  
+            >  
+                Select Symbol  
+            </button>  
+            {menuVisible && (  
+                <div className="dropdown-content" onMouseEnter={handleMouseEnter}>  
+                    {groupedSymbols.map(group => (  
+                        <div  
+                            key={group.assetName}  
+                            onMouseEnter={() => setActiveGroup(group.assetName)}  
+                            onMouseLeave={() => setActiveGroup(null)}  
+                            className="dropdown-group"  
+                        >  
+                            <div className={`group-label ${activeGroup === group.assetName ? 'active' : ''}`}>  
+                                {group.assetName} <span className="arrow">{activeGroup === group.assetName ? '->' : ''}</span>  
+                            </div>  
+                            {activeGroup === group.assetName && (  
+                                <div className="child-menu">  
+                                    {group.symbols.map(symbol => (  
+                                        <div  
+                                            key={symbol.code}  
+                                            onClick={() => {  
+                                                props.setSelectedSymbol(symbol.code);  
+                                                setMenuVisible(false); // Close the menu on selection  
+                                            }}  
+                                            className="child-item"  
+                                        >  
+                                            {symbol.name}  
+                                        </div>  
+                                    ))}  
+                                </div>  
+                            )}  
+                        </div>  
+                    ))}  
+                </div>  
+            )}  
+        </div>  
+                    <input value={`Bid: ${bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] ? bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] : "Select Symbol"}`} className='trading-leverage' readOnly />
                     <button onClick={() => { handleOption(true) }} className='trading-sell' disabled={!isSetSymbol}>Sell</button>
                     <input defaultValue={amount} className='trading-amount' onChange={(e) => setAmount(e.target.value)} />
                     <button onClick={() => { handleOption(false) }} className='trading-buy' disabled={!isSetSymbol}>Buy</button>
-                    <input value={`Ask: ${ask[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)]}`} className='trading-leverage' readOnly />
+                    <input value={`Ask: ${ask[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] ? ask[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] : "Select Symbol"}`} className='trading-leverage' readOnly />
                 </div>
                 <CustomTabPanel value={value} index={0}>
                     <PositionsTable
