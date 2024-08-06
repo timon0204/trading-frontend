@@ -189,6 +189,9 @@ export default function AccountManagement(props) {
             })
             .catch((err) => {
                 console.log("Axios Error with ", err);
+                props.setIsAuth(false);
+                localStorage.removeItem("tradeToken");
+                window.location.reload();
             })
     }
 
@@ -271,6 +274,7 @@ export default function AccountManagement(props) {
         };
 
         ws.onclose = function () {
+            const reconnectInterval = 5000;
             console.log('socket close : will reconnect in ' + reconnectInterval);
             setTimeout(() => getDataWithSocket(ws, key, data), reconnectInterval); // Pass the correct arguments
         };

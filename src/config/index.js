@@ -1,3 +1,3 @@
 module.exports = {
-    BackendEndpoint : "http://191.101.0.94:8000/api"
+    BackendEndpoint : "http://127.0.0.1:8000/api"
 }
