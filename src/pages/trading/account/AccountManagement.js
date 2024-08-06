@@ -90,7 +90,7 @@ function a11yProps(index) {
 export default function AccountManagement(props) {
     const [value, setValue] = React.useState(0);
     const [leverage, setLeverage] = React.useState(1);
-    const [commission, setCommission] = React.useState(1);
+    const [commissions, setCommissions] = React.useState(1);
 
     const [updateProfit, setUpdateProfit] = React.useState(0);
     const [updateLoss, setUpdateLoss] = React.useState(0);
@@ -140,7 +140,7 @@ export default function AccountManagement(props) {
         const fetchTrading = async () => {
             const datas = await fetchTradingDatas();
             setLeverage(datas.leverage);
-            setCommission(datas.commission);
+            setCommissions(datas.commissions);
         }
         fetchTrading();
         const ws = new WebSocket('wss://marketdata.tradermade.com/feedadv');
@@ -378,7 +378,7 @@ export default function AccountManagement(props) {
                         positionData={openPositionsData}
                         symbols={props.symbols}
                         leverage={leverage}
-                        commission={commission}
+                        commissions={commissions}
                         bids={bid}
                         asks={ask}
                         setEquity={setEquity}

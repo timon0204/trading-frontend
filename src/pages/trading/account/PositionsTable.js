@@ -63,7 +63,7 @@ const PositionsTable = (props) => {
   let totalProfit = 0;
   React.useEffect(() => {
     for(const row of props.positionData) {
-      totalProfit += ((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbol)[0].pip_size * row.size * props.leverage - props.commission);
+      totalProfit += ((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbolName)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbolName)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbolName)[0].pip_size * row.size * props.leverage - row.commission);
     };
     props.setEquity(totalProfit);
   })
@@ -94,7 +94,7 @@ const PositionsTable = (props) => {
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <StyledTableCell component="th" scope="row">
-                <WatchListItem fromCurrency={[row.symbol].slice(0, 3)} toCurrency={row.symbol.slice(3, 6)} />
+                <WatchListItem fromCurrency={[row.symbolName].slice(0, 3)} toCurrency={row.symbolName.slice(3, 6)} />
               </StyledTableCell>
               <StyledTableCell>{row.id}</StyledTableCell>
               <StyledTableCell>{row.createdAt}</StyledTableCell>
@@ -103,10 +103,10 @@ const PositionsTable = (props) => {
               <StyledTableCell>{row.startPrice}</StyledTableCell>
               <StyledTableCell>{row.stopLoss}</StyledTableCell>
               <StyledTableCell>{row.takeProfit}</StyledTableCell>
-              <StyledTableCell>{row.type == "Sell" ? props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)]}</StyledTableCell>
-              <StyledTableCell>{props.commission}</StyledTableCell>
-              <StyledTableCell>{((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbol)[0].pip_size * row.size * props.leverage).toFixed(2)}</StyledTableCell>
-              <StyledTableCell>{((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbol)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbol)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbol)[0].pip_size * row.size * props.leverage - props.commission).toFixed(2)}</StyledTableCell>
+              <StyledTableCell>{row.type == "Sell" ? props.bids[props.symbols.map(item => item.code).indexOf(row.symbolName)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbolName)]}</StyledTableCell>
+              <StyledTableCell>{row.commission}</StyledTableCell>
+              <StyledTableCell>{((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbolName)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbolName)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbolName)[0].pip_size * row.size * props.leverage).toFixed(2)}</StyledTableCell>
+              <StyledTableCell>{((row.type == "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbolName)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbolName)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbolName)[0].pip_size * row.size * props.leverage - row.commission).toFixed(2)}</StyledTableCell>
               <StyledTableCell><button onClick={() => { props.handleCancel(row.id) }} className='trading-btns'>Close</button><button onClick={() => { props.handleUpdate(row.id) }} className='trading-btns'>Update</button></StyledTableCell>
             </StyledTableRow>
           ))}
