@@ -13,38 +13,43 @@ const TradingViewWidget = (props) => {
             showSymbolLogo: true,
             symbolsGroups: [
                 {
-                    name: "Major",
+                    name: "Forex",
                     symbols: [
-                        { name: "FX_IDC:EURUSD", displayName: "EUR to USD" },
-                        { name: "FX_IDC:USDJPY", displayName: "USD to JPY" },
-                        { name: "FX_IDC:GBPUSD", displayName: "GBP to USD" },
-                        { name: "FX_IDC:AUDUSD", displayName: "AUD to USD" },
-                        { name: "FX_IDC:USDCAD", displayName: "USD to CAD" },
-                        { name: "FX_IDC:USDCHF", displayName: "USD to CHF" }
+                        { name: "FX:EURUSD", displayName: "EUR to USD" },
+                        { name: "FX:GBPUSD", displayName: "GBP to USD" },
+                        { name: "FX:USDJPY", displayName: "USD to JPY" },
+                        { name: "FX:USDCHF", displayName: "USD to CHF" },
+                        { name: "FX:AUDUSD", displayName: "AUD to USD" },
+                        { name: "FX:USDCAD", displayName: "USD to CAD" }
                     ]
                 },
                 {
-                    name: "Minor",
+                    name: "Idices",
                     symbols: [
-                        { name: "FX_IDC:EURGBP", displayName: "EUR to GBP" },
-                        { name: "FX_IDC:EURJPY", displayName: "EUR to JPY" },
-                        { name: "FX_IDC:GBPJPY", displayName: "GBP to JPY" },
-                        { name: "FX_IDC:CADJPY", displayName: "CAD to JPY" },
-                        { name: "FX_IDC:GBPCAD", displayName: "GBP to CAD" },
-                        { name: "FX_IDC:EURCAD", displayName: "EUR to CAD" }
+                        { name: "BLACKBULL:US30", displayName: "US30" },
+                        { name: "BLACKBULL:UK100", displayName: "UK100" },
+                        { name: "BLACKBULL:SPX500", displayName: "SPX500" },
+                        { name: "BLACKBULL:GER30", displayName: "GER30" },
                     ]
                 },
                 {
-                    name: "Exotic",
+                    name: "Crypto",
                     symbols: [
-                        { name: "FX_IDC:USDSEK", displayName: "USD to SEK" },
-                        { name: "FX_IDC:USDMXN", displayName: "USD to MXN" },
-                        { name: "FX_IDC:USDZAR", displayName: "USD to ZAR" },
-                        { name: "FX_IDC:EURTRY", displayName: "EUR to TRY" },
-                        { name: "FX_IDC:EURNOK", displayName: "EUR to NOK" },
-                        { name: "FX_IDC:GBPPLN", displayName: "GBP to PLN" }
+                        { name: "CRYPTO:BTCUSD", displayName: "BTC to USD" },
+                        { name: "CRYPTO:ETHUSD", displayName: "ETH to USD" },
+                        { name: "CRYPTO:USDTUSD", displayName: "USDT to USD" },
                     ]
-                }
+                },
+                {
+                    name: "Futures",
+                    symbols: [
+                        { name: "OANDA:XAUUSD", displayName: "Gold" },
+                        { name: "OANDA:XAGUSD", displayName: "Silver" },
+                        { name: "SKILLING:NATGAS", displayName: "Gas" },
+                        { name: "EASYMARKETS:OILUSD", displayName: "Oil" },
+                    ]
+                },
+
             ],
             colorTheme: "dark"
         });
