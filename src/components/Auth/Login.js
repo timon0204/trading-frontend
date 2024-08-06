@@ -10,7 +10,6 @@ import {useNavigate} from 'react-router-dom';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [server, setServer] = useState('');
   const {status, error, isAuthenticated } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -19,7 +18,6 @@ const Login = () => {
     const credentials = {
         email:email,
         password: password,
-        server: server
     }
     dispatch(loginUser(credentials));
   };
@@ -58,17 +56,6 @@ const Login = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="server">Server</label>
-            <input
-              type="text"
-              id="server"
-              placeholder="Server"
-              value={server}
-              onChange={(e) => setServer(e.target.value)}
               required
             />
           </div>
