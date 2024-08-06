@@ -1,3 +1,4 @@
+import { Tune } from '@mui/icons-material';
 import React, { useEffect, useRef } from 'react';
 
 const TradingViewWidget = ({ selectedSymbol, setSelectedSymbol }) => {
@@ -14,18 +15,10 @@ const TradingViewWidget = ({ selectedSymbol, setSelectedSymbol }) => {
         style: '1',
         locale: 'en',
         toolbar_bg: '#f1f3f6',
-        enable_publishing: true,
+        enable_publishing: false,
         hide_side_toolbar: false,
-        allow_symbol_change: true, 
+        allow_symbol_change: false, 
         withdateranges: true,
-        watchlist: [
-          "FX:EURUSD",
-          "FX:USDJPY",
-          "FX:GBPUSD",
-          "FX:AUDUSD",
-          "FX:USDCAD",
-          "FX:USDCHF"
-        ],
         container_id: containerRef.current.id,
       });
 

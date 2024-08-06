@@ -137,76 +137,33 @@ export default function AccountManagement(props) {
     };
 
     React.useEffect(() => {
-        const fetchTrading = async () => {
-            const datas = await fetchTradingDatas();
-            setLeverage(datas.leverage);
-            setCommissions(datas.commissions);
-        }
-        fetchTrading();
-        const ws = new WebSocket('wss://marketdata.tradermade.com/feedadv');
-
-        const updateBid = (index, newValue) => {
-            setBid(prevBids => {
-                const newBids = [...prevBids];
-                newBids[index] = newValue;
-                return newBids;
-            });
-        };
-
-        const updateAsk = (index, newValue) => {
-            setAsk(prevAsks => {
-                const newAsks = [...prevAsks];
-                newAsks[index] = newValue;
-                return newAsks;
-            });
-        };
-
-        const handleOpen = () => {
-            console.log('WebSocket connection established');
-            console.log("symbols : ", props.symbols);
-            ws.send(`{"userKey":"wsx87-Jw_pCkochqfjRA", "symbol": "${props.symbols.map(item => item.code).join(',')}"}`);
-            // ws.send("{\"userKey\":\"wsx87-Jw_pCkochqfjRA\", \"symbol\":\"BTCUSD\"}");
-        };
-
-        const handleMessage = (event) => {
-            try {
-                if (event.data === "User Key Used to many times") {
-                    console.log("User Key Used to many times");
-                    return;
-                }
-                if (event.data !== "Connected") {
-                    const data = JSON.parse(event.data);
-                    updateAsk(props.symbols.map(item => item.code).indexOf(data.symbol), data.ask);
-                    updateBid(props.symbols.map(item => item.code).indexOf(data.symbol), data.bid);
-                }
-            } catch (error) {
-                console.error('Error parsing WebSocket message:', error);
+        try {
+            const fetchTrading = async () => {
+                const datas = await fetchTradingDatas();
+                setLeverage(datas.leverage);
+                setCommissions(datas.commissions);
             }
-        };
+            fetchTrading();
+            const Symbols_total = props.symbols.map(item => item.code);
+            const Symbols = processArrayInChunks(Symbols_total, 10);
+            if (Symbols.length > 1) {
+                const ws0 = new WebSocket('wss://marketdata.tradermade.com/feedadv');
+                getDataWithSocket(ws0, "wsMtBTQh4fh8VSlhZCTA", Symbols[0]);
+            }
+            if (Symbols.length > 1) {
+                const ws1 = new WebSocket('wss://marketdata.tradermade.com/feedadv');
+                getDataWithSocket(ws1, "wsNh6jrEk48RLj4qJ90w", Symbols[1]);
+            }
+            if (Symbols.length > 2) {
+                const ws2 = new WebSocket('wss://marketdata.tradermade.com/feedadv');
+                getDataWithSocket(ws2, "wsWCYzw5ALZPxbCWTDaQ", Symbols[2]);
+            }
 
-        const handleClose = () => {
-            console.log('WebSocket connection closed');
-        };
+            positionInterval.current = setInterval(getAllPositions, 3000);
 
-        const handleError = (error) => {
-            console.error('WebSocket error:', error);
-        };
-
-        ws.addEventListener('open', handleOpen);
-        ws.addEventListener('message', handleMessage);
-        ws.addEventListener('close', handleClose);
-        ws.addEventListener('error', handleError);
-
-        positionInterval.current = setInterval(getAllPositions, 3000);
-
-
-        return () => {
-            ws.removeEventListener('open', handleOpen);
-            ws.removeEventListener('message', handleMessage);
-            ws.removeEventListener('close', handleClose);
-            ws.removeEventListener('error', handleError);
-            ws.close();
-        };
+        } catch (error) {
+            console.log("AccountManagement : ", error);
+        }
 
     }, [props.symbols]);
 
@@ -306,6 +263,66 @@ export default function AccountManagement(props) {
             })
         setUpdateModalVisible(false);
     }
+
+    const getDataWithSocket = (ws, key, data) => {
+        console.log(data);
+        ws.onopen = function open() {
+            ws.send(`{"userKey":"${key}", "symbol":"${data}"}`);
+        };
+
+        ws.onclose = function () {
+            console.log('socket close : will reconnect in ' + reconnectInterval);
+            setTimeout(() => getDataWithSocket(ws, key, data), reconnectInterval); // Pass the correct arguments
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                if (event.data === "User Key Used to many times") {
+                    console.log("User Key Used to many times");
+                    return;
+                }
+                if (event.data !== "Connected") {
+                    try {
+                        const data = JSON.parse(event.data);
+                        updateAsk(props.symbols.map(item => item.code).indexOf(data.symbol), data.ask);
+                        updateBid(props.symbols.map(item => item.code).indexOf(data.symbol), data.bid);
+                    } catch (error) {
+                        console.log(event.data);
+                    }
+                }
+            } catch (error) {
+                console.error('Error parsing WebSocket message:', error);
+            }
+        };
+    };
+
+
+    const processArrayInChunks = (arr, chunkSize) => {
+        const result = [];
+
+        for (let i = 0; i < arr.length; i += chunkSize) {
+            const chunk = arr.slice(i, i + chunkSize);
+            result.push(chunk.join(','));
+        }
+
+        return result;
+    }
+
+    const updateBid = (index, newValue) => {
+        setBid(prevBids => {
+            const newBids = [...prevBids];
+            newBids[index] = newValue;
+            return newBids;
+        });
+    };
+
+    const updateAsk = (index, newValue) => {
+        setAsk(prevAsks => {
+            const newAsks = [...prevAsks];
+            newAsks[index] = newValue;
+            return newAsks;
+        });
+    };
 
     return (
         <>

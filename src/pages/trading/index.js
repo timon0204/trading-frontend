@@ -44,7 +44,7 @@ const Trading = () => {
                 <div className='tradingview-container'>
                     <div className='chart-container'>
                         <Grid container spacing={2}>
-                            <Grid item xs={8}>
+                            <Grid item xs={6}>
                                 <Item sx={{ height: isAuth ? "500px" : "700px" }} p={5}>
                                     <TradingViewChart
                                         selectedSymbol={selectedSymbol}
@@ -52,10 +52,11 @@ const Trading = () => {
                                     />
                                 </Item>
                             </Grid>
-                            <Grid item xs={4} sx={{ display: 'flex', flexDirection: "column", flex: '' }}>
+                            <Grid item xs={6} sx={{ display: 'flex', flexDirection: "column", flex: '' }}>
                                 <Item sx={{ height: '80%' }} p={5}>
                                     <WatchList
                                         height={isAuth ? "500" : "700"}
+                                        symbols={symbols}
                                     />
                                 </Item>
                             </Grid>
