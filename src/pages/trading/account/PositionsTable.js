@@ -63,7 +63,7 @@ const PositionsTable = (props) => {
   let totalProfit = 0;
   React.useEffect(() => {
     for(const row of props.positionData) {
-      totalProfit += ((row.type != "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbolName)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbolName)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbolName)[0].pip_size * row.size * props.leverage * -1 - row.commission);
+      totalProfit += ((row.type != "Sell" ? row.startPrice - props.bids[props.symbols.map(item => item.code).indexOf(row.symbolName)] : props.asks[props.symbols.map(item => item.code).indexOf(row.symbolName)] - row.startPrice) / props.symbols.filter((symbol) => symbol.code == row.symbolName)[0].pip_size * row.size * props.leverage * -1 - row.commission) ;
     };              
     props.setEquity(totalProfit);
   })
