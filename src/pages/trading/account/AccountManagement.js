@@ -95,8 +95,7 @@ export default function AccountManagement(props) {
     const [updateProfit, setUpdateProfit] = React.useState(0);
     const [updateLoss, setUpdateLoss] = React.useState(0);
 
-    const [bid, setBid] = React.useState([0, 0, 0, 0, 0, 0]);
-    const [ask, setAsk] = React.useState([0, 0, 0, 0, 0, 0]);
+
     const [amount, setAmount] = React.useState(0);
 
     const [openPositionsData, setOpenPositionsData] = React.useState([]);
@@ -142,6 +141,7 @@ export default function AccountManagement(props) {
                 const datas = await fetchTradingDatas();
                 setLeverage(datas.leverage);
                 setCommissions(datas.commissions);
+                props.setAccounts(datas.accounts)
             }
             fetchTrading();
             const Symbols_total = props.symbols.map(item => item.code);
@@ -313,7 +313,7 @@ export default function AccountManagement(props) {
     }
 
     const updateBid = (index, newValue) => {
-        setBid(prevBids => {
+        props.setBid(prevBids => {
             const newBids = [...prevBids];
             newBids[index] = newValue;
             return newBids;
@@ -321,7 +321,7 @@ export default function AccountManagement(props) {
     };
 
     const updateAsk = (index, newValue) => {
-        setAsk(prevAsks => {
+        props.setAsk(prevAsks => {
             const newAsks = [...prevAsks];
             newAsks[index] = newValue;
             return newAsks;
@@ -388,11 +388,11 @@ export default function AccountManagement(props) {
                             </div>
                         )}
                     </div>
-                    <input value={`Bid: ${bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] ? bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] : "Select Symbol"}`} className='trading-leverage' readOnly />
+                    <input value={`Bid: ${props.bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] ? props.bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] : "Select Symbol"}`} className='trading-leverage' readOnly />
                     <button onClick={() => { handleOption(true) }} className='trading-sell' disabled={!isSetSymbol}>Sell</button>
                     <input defaultValue={amount} className='trading-amount' onChange={(e) => setAmount(e.target.value)} />
                     <button onClick={() => { handleOption(false) }} className='trading-buy' disabled={!isSetSymbol}>Buy</button>
-                    <input value={`Ask: ${ask[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] ? ask[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] : "Select Symbol"}`} className='trading-leverage' readOnly />
+                    <input value={`Ask: ${props.ask[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] ? props.ask[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] : "Select Symbol"}`} className='trading-leverage' readOnly />
                 </div>
                 <CustomTabPanel value={value} index={0}>
                     <PositionsTable
@@ -400,8 +400,8 @@ export default function AccountManagement(props) {
                         symbols={props.symbols}
                         leverage={leverage}
                         commissions={commissions}
-                        bids={bid}
-                        asks={ask}
+                        bids={props.bid}
+                        asks={props.ask}
                         setEquity={setEquity}
                         handleCancel={handleCancel}
                         handleUpdate={handleUpdate}

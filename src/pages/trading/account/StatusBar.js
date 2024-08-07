@@ -15,7 +15,7 @@ const StatusBar = (props) => {
         <div style={styles.container}>
             <AccountStatus title="BALANCE" value={props.balance}/>
             <AccountStatus title="Equity" value={(Number(props.balance) + Number(props.equity)).toFixed(2)}/>
-            <AccountStatus title="PROFIT & LOSS" value={Number(props.equity).toFixed(2)}/>
+            <AccountStatus title="PROFIT & LOSS" value={Number(props.equity).toFixed(2)} color={Number(props.equity) > 0 ? "#00ff00": (Number(props.equity) < 0 ?"#ff0000" : "")}/>
             <AccountStatus title="MARGIN USED" value={Number(props.marginUsed).toFixed(2)}/>
             <AccountStatus title="MARGIN AVAILABLE" value={Number(props.marginAvailable).toFixed(2)}/>
             {/* <AccountStatus title="MARGIN LEVEL" value={props.margin_level}/> */}

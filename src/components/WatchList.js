@@ -1,76 +1,82 @@
-import React, { useEffect, useRef } from 'react';
+import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+
+// Styled TableCell
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+        backgroundColor: 'rgb(20, 20, 20)',
+        color: 'rgb(220, 220, 220)',
+        fontWeight: 'bold',
+    },
+    [`&.${tableCellClasses.body}`]: {
+        backgroundColor: 'rgb(40, 40, 40)',
+        color: 'rgb(200, 200, 200)',
+    },
+}));
+
+// Styled TableRow
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+        backgroundColor: 'rgb(27, 27, 27)',
+    },
+    // Hide last border
+    '&:last-child td, &:last-child th': {
+        border: 0,
+    },
+    // Add hover effect
+    '&:hover': {
+        backgroundColor: 'rgba(27, 27, 27, 0.4)',
+    },
+}));
+
+// Custom TableCell for Name with Conditional Styling
+const NameTableCell = styled(StyledTableCell)(({ value }) => ({
+    color: value > 0 ? 'rgb(0, 200, 0)' : value < 0 ? 'rgb(200, 0, 0)' : 'inherit',
+}));
 
 const TradingViewWidget = (props) => {
-    const widgetRef = useRef(null);
-
-    useEffect(() => {
-        const scriptContent = JSON.stringify({
-            title: "Currencies",
-            title_link: "/markets/currencies/rates-major/",
-            width: "100%",
-            height: props.height,
-            locale: "en",
-            showSymbolLogo: true,
-            symbolsGroups: [
-                {
-                    name: "Forex",
-                    symbols: [
-                        { name: "FX:EURUSD", displayName: "EUR to USD" },
-                        { name: "FX:GBPUSD", displayName: "GBP to USD" },
-                        { name: "FX:USDJPY", displayName: "USD to JPY" },
-                        { name: "FX:USDCHF", displayName: "USD to CHF" },
-                        { name: "FX:AUDUSD", displayName: "AUD to USD" },
-                        { name: "FX:USDCAD", displayName: "USD to CAD" }
-                    ]
-                },
-                {
-                    name: "Idices",
-                    symbols: [
-                        { name: "BLACKBULL:US30", displayName: "US30" },
-                        { name: "BLACKBULL:UK100", displayName: "UK100" },
-                        { name: "BLACKBULL:SPX500", displayName: "SPX500" },
-                        { name: "BLACKBULL:GER30", displayName: "GER30" },
-                    ]
-                },
-                {
-                    name: "Crypto",
-                    symbols: [
-                        { name: "CRYPTO:BTCUSD", displayName: "BTC to USD" },
-                        { name: "CRYPTO:ETHUSD", displayName: "ETH to USD" },
-                        { name: "CRYPTO:USDTUSD", displayName: "USDT to USD" },
-                    ]
-                },
-                {
-                    name: "Futures",
-                    symbols: [
-                        { name: "OANDA:XAUUSD", displayName: "Gold" },
-                        { name: "OANDA:XAGUSD", displayName: "Silver" },
-                        { name: "SKILLING:NATGAS", displayName: "Gas" },
-                        { name: "EASYMARKETS:OILUSD", displayName: "Oil" },
-                    ]
-                },
-
-            ],
-            colorTheme: "dark"
-        });
-
-        if (widgetRef.current) {
-            widgetRef.current.innerHTML = '';
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.async = true;
-            script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js';
-            script.innerHTML = scriptContent;
-            widgetRef.current.appendChild(script);
-        }
-
-    }, [props.height]);
-
     return (
-        <div className="tradingview-widget-container">
-            <div ref={widgetRef} className="tradingview-widget-container__widget"></div>
-        </div>
+        <TableContainer component={Paper} style={{ backgroundColor: 'rgb(27, 27, 27)' }}>
+            <Box sx={{ height: 500, overflow: 'auto' }}>
+                <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+                    <TableHead>
+                        <TableRow>
+                            <StyledTableCell>Name</StyledTableCell>
+                            <StyledTableCell>AssetName</StyledTableCell>
+                            <StyledTableCell>Value</StyledTableCell>
+                            <StyledTableCell>Bid</StyledTableCell>
+                            <StyledTableCell>Ask</StyledTableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {props.symbols.map((row, index) => (
+                            <StyledTableRow key={row.name}>
+                                <NameTableCell 
+                                    component="th" 
+                                    scope="row"
+                                    value={row.value}
+                                >
+                                    {row.name}
+                                </NameTableCell>
+                                <StyledTableCell>{row.assetName}</StyledTableCell>
+                                <StyledTableCell>{props.bid[index] ? ((props.bid[index] + props.ask[index]) / 2).toFixed(6) : "Closed"}</StyledTableCell>
+                                <StyledTableCell>{props.bid[index] ? props.bid[index].toFixed(6) : "Closed"}</StyledTableCell>
+                                <StyledTableCell>{props.bid[index] ? props.ask[index].toFixed(6) : "Closed"}</StyledTableCell>
+                            </StyledTableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </Box>
+        </TableContainer>
     );
-};
+}
 
 export default TradingViewWidget;
