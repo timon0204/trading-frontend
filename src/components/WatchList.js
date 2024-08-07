@@ -8,6 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 
 // Styled TableCell
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -43,9 +44,26 @@ const NameTableCell = styled(StyledTableCell)(({ value }) => ({
 }));
 
 const TradingViewWidget = (props) => {
+    const [searchQuery, setSearchQuery] = React.useState('');
+
+    // Filter rows based on the search query
+    const filteredSymbols = props.symbols.filter(
+        (row) =>
+            row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            row.assetName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
-        <TableContainer component={Paper} style={{ backgroundColor: 'rgb(27, 27, 27)' }}>
-            <Box sx={{ height: 500, overflow: 'auto' }}>
+        <div className='WatchListBox'>
+            <TextField
+                label="Search"
+                variant="outlined"
+                fullWidth
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                sx={{ marginBottom: 2, backgroundColor: 'antiquewhite', borderRadius: '5px' }}
+            />
+            <TableContainer component={Paper} style={{ height: 'calc(100% - 70px)', overflow: 'auto', backgroundColor: 'rgb(200, 200, 200)' }}>
                 <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                     <TableHead>
                         <TableRow>
@@ -57,10 +75,10 @@ const TradingViewWidget = (props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {props.symbols.map((row, index) => (
+                        {filteredSymbols.map((row, index) => (
                             <StyledTableRow key={row.name}>
-                                <NameTableCell 
-                                    component="th" 
+                                <NameTableCell
+                                    component="th"
                                     scope="row"
                                     value={row.value}
                                 >
@@ -74,8 +92,8 @@ const TradingViewWidget = (props) => {
                         ))}
                     </TableBody>
                 </Table>
-            </Box>
-        </TableContainer>
+            </TableContainer>
+        </div>
     );
 }
 
