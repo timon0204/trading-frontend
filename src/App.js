@@ -9,7 +9,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const { user } = useSelector((state) => state.auth);
-  console.log("this is a user app", user)
   return (
     <div>
       <Routes>

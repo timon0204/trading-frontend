@@ -29,7 +29,6 @@ const Trading = () => {
   const [accounts, setAccounts] = useState([]);
 
   const user = useSelector((state) => state.auth.user);
-  console.log("this is a user", user);
 
   useEffect(() => {
     async function fetchData() {
@@ -79,6 +78,7 @@ const Trading = () => {
                     symbols={symbols}
                     bid={bid}
                     ask={ask}
+                    setSelectedSymbol={setSelectedSymbol}
                   />
                 </Item>
               </Grid>

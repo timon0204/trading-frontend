@@ -39,7 +39,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
         backgroundColor: 'rgba(27, 27, 27, 0.4)',
     },
 
-    height : "54px"
+    height: "54px"
 }));
 
 // Custom TableCell for Name with Conditional Styling
@@ -119,10 +119,13 @@ const TradingViewWidget = (props) => {
                             const index = props.symbols.indexOf(row);
                             return (
                                 <StyledTableRow key={row.name}>
-                                    <NameTableCell component="th" scope="row" value={row.value}>
+                                    <NameTableCell component="th" scope="row" value={row.value}  onClick={() => { console.log(row.code); props.setSelectedSymbol(row.code)}}>
                                         {row.name}
                                     </NameTableCell>
-                                    <StyledTableCell>{row.assetName}</StyledTableCell>
+                                    <StyledTableCell>
+                                        {row.assetName}
+                                    </StyledTableCell>
+
                                     <StyledTableCell>{props.bid[index] ? ((props.bid[index] + props.ask[index]) / 2).toFixed(6) : "Closed"}</StyledTableCell>
                                     <StyledTableCell>{props.bid[index] ? props.bid[index].toFixed(6) : "Closed"}</StyledTableCell>
                                     <StyledTableCell>{props.ask[index] ? props.ask[index].toFixed(6) : "Closed"}</StyledTableCell>
