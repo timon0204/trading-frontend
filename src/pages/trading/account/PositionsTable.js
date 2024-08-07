@@ -94,7 +94,7 @@ const PositionsTable = (props) => {
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <StyledTableCell component="th" scope="row">
-                <WatchListItem fromCurrency={[row.symbolName].slice(0, 3)} toCurrency={row.symbolName.slice(3, 6)} />
+                <WatchListItem fromCurrency={row.symbolName.slice(0, 3)} toCurrency={row.symbolName.slice(3, 6)} />
               </StyledTableCell>
               <StyledTableCell>{row.id}</StyledTableCell>
               <StyledTableCell>{row.createdAt}</StyledTableCell>

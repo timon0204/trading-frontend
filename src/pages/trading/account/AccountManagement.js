@@ -110,7 +110,6 @@ export default function AccountManagement(props) {
     const [updateModalVisible, setUpdateModalVisible] = React.useState(false);
     const [updateID, setUpdateID] = React.useState(0);
 
-    const [isSetSymbol, setIsSetSymbol] = React.useState(false);
 
     const positionInterval = React.useRef(null);
 
@@ -352,7 +351,7 @@ export default function AccountManagement(props) {
                             onMouseEnter={handleMouseEnter}
                             onClick={() => setMenuVisible(prev => !prev)}
                         >
-                            {!isSetSymbol ? "Select Symbol" : props.selectedSymbol}
+                            {props.selectedSymbol=="" ? "Select Symbol" : props.selectedSymbol}
                         </button>
                         {menuVisible && (
                             <div className="dropdown-content" onMouseEnter={handleMouseEnter}>
@@ -374,7 +373,6 @@ export default function AccountManagement(props) {
                                                         onClick={() => {
                                                             props.setSelectedSymbol(symbol.code);
                                                             setMenuVisible(false); // Close the menu on selection  
-                                                            setIsSetSymbol(true);
                                                         }}
                                                         className="child-item"
                                                     >
@@ -389,9 +387,9 @@ export default function AccountManagement(props) {
                         )}
                     </div>
                     <input value={`Bid: ${props.bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] ? props.bid[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] : "Select Symbol"}`} className='trading-leverage' readOnly />
-                    <button onClick={() => { handleOption(true) }} className='trading-sell' disabled={!isSetSymbol}>Sell</button>
+                    <button onClick={() => { handleOption(true) }} className='trading-sell' disabled={props.selectedSymbol==""}>Sell</button>
                     <input defaultValue={amount} className='trading-amount' onChange={(e) => setAmount(e.target.value)} />
-                    <button onClick={() => { handleOption(false) }} className='trading-buy' disabled={!isSetSymbol}>Buy</button>
+                    <button onClick={() => { handleOption(false) }} className='trading-buy' disabled={props.selectedSymbol==""}>Buy</button>
                     <input value={`Ask: ${props.ask[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] ? props.ask[props.symbols.map(item => item.code).indexOf(props.selectedSymbol)] : "Select Symbol"}`} className='trading-leverage' readOnly />
                 </div>
                 <CustomTabPanel value={value} index={0}>

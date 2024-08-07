@@ -22,7 +22,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const Trading = () => {
   const [isAuth, setIsAuth] = useState(true);
-  const [selectedSymbol, setSelectedSymbol] = useState("FX:EURUSD");
+  const [selectedSymbol, setSelectedSymbol] = useState("");
   const [symbols, setSymbols] = useState([]);
   const [bid, setBid] = useState([0, 0, 0, 0, 0, 0]);
   const [ask, setAsk] = useState([0, 0, 0, 0, 0, 0]);
