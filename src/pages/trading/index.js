@@ -62,7 +62,7 @@ const Trading = () => {
               <select onChange={handleAccountChange} className='account-switch'>
                 {accounts.map((account, index) => (
                   <option key={index} value={account.token}>
-                    {account.type}
+                    {account.type} ({account.balance})
                   </option>
                 ))}
               </select>
