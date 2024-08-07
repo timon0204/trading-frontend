@@ -37,6 +37,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     // Add hover effect
     '&:hover': {
         backgroundColor: 'rgba(27, 27, 27, 0.4)',
+        cursor: 'pointer',
     },
 
     height: "54px"
