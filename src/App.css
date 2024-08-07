@@ -95,6 +95,7 @@
   overflow: hidden; /* Prevent scrolling on the container itself */
 }
 
+
 .TableContainer {
   height: calc(100% - 70px); /* Adjust height based on other UI elements like filters */
   overflow-y: auto; /* Enable vertical scrolling */
@@ -119,4 +120,16 @@
   height: 40px;
   border-radius: 10px;
   float: right;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.circular-progress {
+  width: 100px !important;
+  height: 100px !important;
 }

@@ -10,6 +10,7 @@ import AccountManagement from './account/AccountManagement';
 import { useSelector } from 'react-redux';
 import Logout from '../../components/Auth/Logout';
 import { fetchSymbols } from '../../utils/api';
+import { CircularProgress } from '@mui/material';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#101013',
@@ -27,6 +28,7 @@ const Trading = () => {
   const [bid, setBid] = useState([0, 0, 0, 0, 0, 0]);
   const [ask, setAsk] = useState([0, 0, 0, 0, 0, 0]);
   const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const user = useSelector((state) => state.auth.user);
 
@@ -42,69 +44,79 @@ const Trading = () => {
     if (selectedAccount) {
       localStorage.setItem("tradeToken", selectedAccount.token);
     }
+    setLoading(true);
+    setTimeout(() => setLoading(false), 3000);
   };
 
   return (
     <>
-      <div style={{ height: "50px" }}>
-        <div style={{ float: 'right', width: '40%' }}>
-          <Logout />
-          <select onChange={handleAccountChange} className='account-switch'>
-            {accounts.map((account, index) => (
-              <option key={index} value={account.token}>
-                {account.type}
-              </option>
-            ))}
-          </select>
+      {loading ? (
+        <div className="loading-container">
+          <CircularProgress className="circular-progress" color="success" />
         </div>
-      </div>
-      <div className='trading-page-container'>
-        <div style={{ width: '40px' }}></div>
-        <div className='tradingview-container'>
-          <div className='chart-container'>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Item sx={{ height: isAuth ? "500px" : "700px" }} p={5}>
-                  <TradingViewChart
+      ) : (
+        <div>
+          <div style={{ height: "50px" }}>
+            <div style={{ float: 'right', width: '40%' }}>
+              <Logout />
+              <select onChange={handleAccountChange} className='account-switch'>
+                {accounts.map((account, index) => (
+                  <option key={index} value={account.token}>
+                    {account.type}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className='trading-page-container'>
+            <div style={{ width: '40px' }}></div>
+            <div className='tradingview-container'>
+              <div className='chart-container'>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Item sx={{ height: isAuth ? "500px" : "700px" }} p={5}>
+                      <TradingViewChart
+                        selectedSymbol={selectedSymbol}
+                        setSelectedSymbol={setSelectedSymbol}
+                      />
+                    </Item>
+                  </Grid>
+                  <Grid item xs={6} sx={{ display: 'flex', flexDirection: "column", flex: '' }}>
+                    <Item sx={{ height: '80%' }} p={5}>
+                      <WatchList
+                        height={isAuth ? "500" : "700"}
+                        symbols={symbols}
+                        bid={bid}
+                        ask={ask}
+                        setSelectedSymbol={setSelectedSymbol}
+                      />
+                    </Item>
+                  </Grid>
+                </Grid>
+              </div>
+              <Box p={1}></Box>
+              {isAuth && (
+                <Box
+                  sx={{ borderRadius: '10px', marginBottom: '0px', flex: "33.01 1 0px" }}
+                  key="account-management"
+                >
+                  <AccountManagement
+                    setIsAuth={setIsAuth}
                     selectedSymbol={selectedSymbol}
                     setSelectedSymbol={setSelectedSymbol}
-                  />
-                </Item>
-              </Grid>
-              <Grid item xs={6} sx={{ display: 'flex', flexDirection: "column", flex: '' }}>
-                <Item sx={{ height: '80%' }} p={5}>
-                  <WatchList
-                    height={isAuth ? "500" : "700"}
                     symbols={symbols}
                     bid={bid}
+                    setBid={setBid}
                     ask={ask}
-                    setSelectedSymbol={setSelectedSymbol}
+                    setAsk={setAsk}
+                    setAccounts={setAccounts}
                   />
-                </Item>
-              </Grid>
-            </Grid>
+                </Box>
+              )}
+            </div>
           </div>
-          <Box p={1}></Box>
-          {isAuth && (
-            <Box
-              sx={{ borderRadius: '10px', marginBottom: '0px', flex: "33.01 1 0px" }}
-              key="account-management"
-            >
-              <AccountManagement
-                setIsAuth={setIsAuth}
-                selectedSymbol={selectedSymbol}
-                setSelectedSymbol={setSelectedSymbol}
-                symbols={symbols}
-                bid={bid}
-                setBid={setBid}
-                ask={ask}
-                setAsk={setAsk}
-                setAccounts={setAccounts}
-              />
-            </Box>
-          )}
         </div>
-      </div>
+      )}
     </>
   );
 };
