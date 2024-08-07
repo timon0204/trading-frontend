@@ -15,6 +15,7 @@ const TradingViewWidget = ({ selectedSymbol, setSelectedSymbol }) => {
         style: '1',
         locale: 'en',
         toolbar_bg: '#f1f3f6',
+        hide_legend: true,
         enable_publishing: false,
         hide_side_toolbar: false,
         allow_symbol_change: false, 

@@ -97,3 +97,13 @@
   border-radius: 10px;
   float: right;
 }
+
+.account-switch {
+  margin: 5px 45px 0 0;
+  background: #4a709b;
+  color: rgb(189, 152, 175);
+  width: 100px;
+  height: 40px;
+  border-radius: 10px;
+  float: right;
+}

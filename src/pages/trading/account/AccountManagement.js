@@ -148,15 +148,15 @@ export default function AccountManagement(props) {
             const Symbols = processArrayInChunks(Symbols_total, 10);
             if (Symbols.length > 1) {
                 const ws0 = new WebSocket('wss://marketdata.tradermade.com/feedadv');
-                getDataWithSocket(ws0, "wsMtBTQh4fh8VSlhZCTA", Symbols[0]);
+                getDataWithSocket(ws0, "wsWCYzw5ALZPxbCWTDaQ", Symbols[0]);
             }
             if (Symbols.length > 1) {
                 const ws1 = new WebSocket('wss://marketdata.tradermade.com/feedadv');
-                getDataWithSocket(ws1, "wsNh6jrEk48RLj4qJ90w", Symbols[1]);
+                getDataWithSocket(ws1, "sioKQAikidUqXcatlbOnA", Symbols[1]);
             }
             if (Symbols.length > 2) {
                 const ws2 = new WebSocket('wss://marketdata.tradermade.com/feedadv');
-                getDataWithSocket(ws2, "wsWCYzw5ALZPxbCWTDaQ", Symbols[2]);
+                getDataWithSocket(ws2, "wsMtBTQh4fh8VSlhZCTA", Symbols[2]);
             }
 
             positionInterval.current = setInterval(getAllPositions, 3000);

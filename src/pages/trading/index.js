@@ -49,14 +49,14 @@ const Trading = () => {
     <>
       <div style={{ height: "50px" }}>
         <div style={{ float: 'right', width: '40%' }}>
-          <select onChange={handleAccountChange}>
+          <Logout />
+          <select onChange={handleAccountChange} className='account-switch'>
             {accounts.map((account, index) => (
               <option key={index} value={account.token}>
                 {account.type}
               </option>
             ))}
           </select>
-          <Logout />
         </div>
       </div>
       <div className='trading-page-container'>
