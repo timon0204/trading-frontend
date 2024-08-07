@@ -9,6 +9,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 // Styled TableCell
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -36,6 +38,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:hover': {
         backgroundColor: 'rgba(27, 27, 27, 0.4)',
     },
+
+    height : "54px"
 }));
 
 // Custom TableCell for Name with Conditional Styling
@@ -45,25 +49,61 @@ const NameTableCell = styled(StyledTableCell)(({ value }) => ({
 
 const TradingViewWidget = (props) => {
     const [searchQuery, setSearchQuery] = React.useState('');
+    const [selectedAsset, setSelectedAsset] = React.useState('');
 
-    // Filter rows based on the search query
+    // Filter rows based on the search query and selected asset
     const filteredSymbols = props.symbols.filter(
         (row) =>
-            row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            row.assetName.toLowerCase().includes(searchQuery.toLowerCase())
+            row.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+            (selectedAsset === '' || row.assetName === selectedAsset)
     );
+
+    // Get unique asset names for the dropdown menu
+    const uniqueAssetNames = [...new Set(props.symbols.map(row => row.assetName))];
 
     return (
         <div className='WatchListBox'>
-            <TextField
-                label="Search"
-                variant="outlined"
-                fullWidth
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                sx={{ marginBottom: 2, backgroundColor: 'antiquewhite', borderRadius: '5px' }}
-            />
-            <TableContainer component={Paper} style={{ height: 'calc(100% - 70px)', overflow: 'auto', backgroundColor: 'rgb(200, 200, 200)' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <TextField
+                    label="Search by Name"
+                    variant="outlined"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    sx={{
+                        backgroundColor: 'antiquewhite',
+                        borderRadius: '5px',
+                        marginRight: 2,
+                        flex: 1,
+                        height: '56px', // Set consistent height
+                    }}
+                />
+                <Select
+                    value={selectedAsset}
+                    onChange={(e) => setSelectedAsset(e.target.value)}
+                    displayEmpty
+                    sx={{
+                        backgroundColor: 'antiquewhite',
+                        borderRadius: '5px',
+                        flex: 1,
+                        height: '56px', // Set consistent height
+                        '& .MuiSelect-select': { // Ensure the inner select box has full height
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }
+                    }}
+                >
+                    <MenuItem value="">
+                        <span>All Assets</span>
+                    </MenuItem>
+                    {uniqueAssetNames.map((assetName) => (
+                        <MenuItem key={assetName} value={assetName}>
+                            {assetName}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </Box>
+            <TableContainer component={Paper} className="TableContainer">
                 <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                     <TableHead>
                         <TableRow>
@@ -75,21 +115,20 @@ const TradingViewWidget = (props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredSymbols.map((row, index) => (
-                            <StyledTableRow key={row.name}>
-                                <NameTableCell
-                                    component="th"
-                                    scope="row"
-                                    value={row.value}
-                                >
-                                    {row.name}
-                                </NameTableCell>
-                                <StyledTableCell>{row.assetName}</StyledTableCell>
-                                <StyledTableCell>{props.bid[index] ? ((props.bid[index] + props.ask[index]) / 2).toFixed(6) : "Closed"}</StyledTableCell>
-                                <StyledTableCell>{props.bid[index] ? props.bid[index].toFixed(6) : "Closed"}</StyledTableCell>
-                                <StyledTableCell>{props.bid[index] ? props.ask[index].toFixed(6) : "Closed"}</StyledTableCell>
-                            </StyledTableRow>
-                        ))}
+                        {filteredSymbols.map((row) => {
+                            const index = props.symbols.indexOf(row);
+                            return (
+                                <StyledTableRow key={row.name}>
+                                    <NameTableCell component="th" scope="row" value={row.value}>
+                                        {row.name}
+                                    </NameTableCell>
+                                    <StyledTableCell>{row.assetName}</StyledTableCell>
+                                    <StyledTableCell>{props.bid[index] ? ((props.bid[index] + props.ask[index]) / 2).toFixed(6) : "Closed"}</StyledTableCell>
+                                    <StyledTableCell>{props.bid[index] ? props.bid[index].toFixed(6) : "Closed"}</StyledTableCell>
+                                    <StyledTableCell>{props.ask[index] ? props.ask[index].toFixed(6) : "Closed"}</StyledTableCell>
+                                </StyledTableRow>
+                            );
+                        })}
                     </TableBody>
                 </Table>
             </TableContainer>

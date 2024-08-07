@@ -90,12 +90,15 @@
 
 .WatchListBox {
   padding: 5px;
-  height: 500px !important;
+  height: 500px; /* Ensure the container has a fixed height */
   background-color: rgb(200, 200, 200);
+  overflow: hidden; /* Prevent scrolling on the container itself */
 }
 
-.WatchListBox .MuiFormControl-root{
-  margin: 0 0 5px 0;
+.TableContainer {
+  height: calc(100% - 70px); /* Adjust height based on other UI elements like filters */
+  overflow-y: auto; /* Enable vertical scrolling */
+  background-color: rgb(200, 200, 200);
 }
 
 .btn_logout {
