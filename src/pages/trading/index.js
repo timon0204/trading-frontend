@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import AccountManagement from './account/AccountManagement';
 import { useSelector } from 'react-redux';
 import Logout from '../../components/Auth/Logout';
-import { fetchSymbols } from '../../utils/api';
+import { fetchSymbols, fetchTradingDatas } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -29,15 +29,19 @@ const Trading = () => {
   const [ask, setAsk] = useState([0, 0, 0, 0, 0, 0]);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [balance, setBalance] = React.useState(10000);
 
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     async function fetchData() {
       setSymbols(await fetchSymbols());
+      const datas = await fetchTradingDatas();
+      setAccounts(datas.accounts);
     }
     fetchData();
-  }, []);
+
+  }, [balance]);
 
   const handleAccountChange = (e) => {
     const selectedAccount = accounts.find(account => account.token === e.target.value);
@@ -45,7 +49,7 @@ const Trading = () => {
       localStorage.setItem("tradeToken", selectedAccount.token);
     }
     setLoading(true);
-    setTimeout(() => setLoading(false), 3000);
+    setTimeout(() => setLoading(false), 5000);
   };
 
   return (
@@ -59,10 +63,10 @@ const Trading = () => {
           <div style={{ height: "50px" }}>
             <div style={{ float: 'right', width: '40%' }}>
               <Logout />
-              <select onChange={handleAccountChange} className='account-switch'>
+              <select onChange={handleAccountChange} className='account-switch' defaultValue={localStorage.getItem("tradeToken")}>
                 {accounts.map((account, index) => (
                   <option key={index} value={account.token}>
-                    {account.type} ({account.balance})
+                    {account.id} - {account.type} ({account.balance})
                   </option>
                 ))}
               </select>
@@ -109,7 +113,8 @@ const Trading = () => {
                     setBid={setBid}
                     ask={ask}
                     setAsk={setAsk}
-                    setAccounts={setAccounts}
+                    balance={balance}
+                    setBalance={setBalance}
                   />
                 </Box>
               )}

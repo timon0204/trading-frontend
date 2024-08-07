@@ -89,7 +89,6 @@ function a11yProps(index) {
 
 export default function AccountManagement(props) {
     const [value, setValue] = React.useState(0);
-    const [leverage, setLeverage] = React.useState(1);
     const [commissions, setCommissions] = React.useState(1);
 
     const [updateProfit, setUpdateProfit] = React.useState(0);
@@ -101,7 +100,6 @@ export default function AccountManagement(props) {
     const [openPositionsData, setOpenPositionsData] = React.useState([]);
     const [realPositionsData, setRealPositionsData] = React.useState([]);
 
-    const [balance, setBalance] = React.useState(10000);
     const [profit, setProfit] = React.useState(0);
     const [marginUsed, setMarginUsed] = React.useState(0);
     const [marginAvailable, setMarginAvailable] = React.useState(0);
@@ -138,9 +136,7 @@ export default function AccountManagement(props) {
         try {
             const fetchTrading = async () => {
                 const datas = await fetchTradingDatas();
-                setLeverage(datas.leverage);
                 setCommissions(datas.commissions);
-                props.setAccounts(datas.accounts)
             }
             fetchTrading();
             const Symbols_total = props.symbols.map(item => item.code);
@@ -178,11 +174,10 @@ export default function AccountManagement(props) {
                     return;
                 }
                 // console.log("data : ", res.data);
-                const { positions, realPositions, leverage, margin, balance } = res.data;
+                const { positions, realPositions, margin, balance } = res.data;
                 setOpenPositionsData(positions);
                 setRealPositionsData(realPositions);
-                setLeverage(leverage);
-                setBalance(balance);
+                props.setBalance(balance);
                 setMarginUsed(margin);
                 setMarginAvailable(balance - margin);
             })
@@ -215,10 +210,9 @@ export default function AccountManagement(props) {
                     return;
                 }
                 // console.log("data : ", res.data);
-                const { positions, leverage, balance, margin } = res.data;
+                const { positions, balance, margin } = res.data;
                 setOpenPositionsData(positions);
-                setLeverage(leverage);
-                setBalance(balance);
+                props.setBalance(balance);
                 setMarginUsed(margin);
                 setMarginAvailable(balance - margin);
             })
@@ -231,11 +225,10 @@ export default function AccountManagement(props) {
         axiosInstance.post("/cancelPosition", { id })
             .then((res) => {
                 // console.log("data : ", res.data);
-                const { positions, realPositions, leverage, margin, balance } = res.data;
+                const { positions, realPositions, margin, balance } = res.data;
                 setOpenPositionsData(positions);
                 setRealPositionsData(realPositions);
-                setLeverage(leverage);
-                setBalance(balance);
+                props.setBalance(balance);
                 setMarginUsed(margin);
                 setMarginAvailable(balance - margin);
             })
@@ -336,7 +329,7 @@ export default function AccountManagement(props) {
                         <AntTab label="Real Positions" />
                     </AntTabs>
                     <StatusBar
-                        balance={balance}
+                        balance={props.balance}
                         equity={equity}
                         profit={profit}
                         marginUsed={marginUsed}
@@ -396,7 +389,6 @@ export default function AccountManagement(props) {
                     <PositionsTable
                         positionData={openPositionsData}
                         symbols={props.symbols}
-                        leverage={leverage}
                         commissions={commissions}
                         bids={props.bid}
                         asks={props.ask}

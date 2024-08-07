@@ -183,10 +183,6 @@ const WatchList = () => {
                 </StyledTableCell>
                 <TableBuyCell>{row.bid}</TableBuyCell>
                 <TableSellCell>{row.ask}</TableSellCell>
-                {/* <StyledTableCell>{row.spread}</StyledTableCell>
-                <StyledTableCell>{row.leverage}</StyledTableCell>
-                <StyledTableCell>{row.dayHigh}</StyledTableCell>
-                <StyledTableCell>{row.dayLow}</StyledTableCell> */}
               </StyledTableRow>
             ))}
           </TableBody>
